@@ -1,4 +1,7 @@
+# v1 has certain type of predefined objects like Pod, Service, etc. 
 apiVersion: v1
+# The type of object we want to make.
+# Pod is an object used to run a container - the smallest component we can create
 kind: Pod
 metadata:
   name: client-pod
