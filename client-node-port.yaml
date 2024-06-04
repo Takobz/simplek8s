@@ -1,12 +1,13 @@
 apiVersion: v1
+# object kind: Service is used for networking. 
 kind: Service
 metadata:
   name: client-node-port
 spec:
-  type: NodePort
+  type: NodePort #type NodePort is for exposing container to web
   ports:
-    - ports: 3050
-      targetPort: 3000
-      nodePort: 31515
+    - port: 3050 # the port that other Pods will use to connect to Pod that uses this NodePort 
+      targetPort: 3000 # the port inside our Pod that we want to open up to the public
+      nodePort: 31515 # the port we will use to test the container inside the Pod, what we will type into the browser etc.
   selector:
-    component: web
+    component: web # link this nodeport to a Pod with label component web.

@@ -6,9 +6,9 @@ kind: Pod
 metadata:
   name: client-pod
   labels:
-    component: web
+    component: web # label to be used by a selector.
 spec:
-  container:
+  containers:
     - name: client
       image: khutsokobela/multi-client
       ports:
