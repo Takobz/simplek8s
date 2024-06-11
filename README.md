@@ -9,13 +9,13 @@ Kubernetes (K8s) is a software system for running multiple containers in set of 
 - `kubectl` for managing the virtual machines within the cluster.
 
 ### Commands
-`minikube start` starts a virtual machine (Node) that will be our K8s cluster.
-`minikube status` checks if there's any cluster started?
+- `minikube start` starts a virtual machine (Node) that will be our K8s cluster.
+- `minikube status` checks if there's any cluster started?
 
-`kubectl apply -f <filename>` - apply the configuration specified in the yaml into minikube node. (i.e create pod, services, etc)
-`kubectl get pods` - gets all objects of type Pod running.
-`kubectl get services` - gets all objects of type Service running.
-`minikube ip` - get the IP addresses of the minicube Node
+- `kubectl apply -f <filename>` - apply the configuration specified in the yaml into minikube node. (i.e create pod, services, etc)
+- `kubectl get pods` - gets all objects of type Pod running.
+- `kubectl get services` - gets all objects of type Service running.
+- `minikube ip` - get the IP addresses of the minicube Node
 
 ## Kubernetes With NodePort.
 Below is a typical Kubernetes cluster with that uses NodePort service as a means to expose the Pod and ultimately the container(s) in the pod to the outside world.
