@@ -32,8 +32,82 @@ Below is a typical Kubernetes cluster with that uses NodePort service as a means
 - A `Load Balancer` is the entry point of the outside request to the k8s cluster. 
 - A `Master` is a control plane that has capabilities like REST APIs that allow us to configure/manage the nodes in the k8s cluster.
 
-#### How The configure of the NodePort looks like:
-The NodePort is just one of many ways to configure network into our k8s Node, below are the capabilities it offers and when to be used:
+### How some components look in code:
 
-## Notes
-- The ports in the k8s node (Minicube) are not exposed via localhost but we need to do `minikube ip` to get the ip to use.
+#### Pod
+A pod is reponsible for running a container or group of containers. Here is how it would look:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: client-pod
+  labels:
+    component: web
+spec:
+  containers:
+    - name: client
+      image: khutsokobela/multi-client
+      ports:
+        - containerPort: 3000
+```
+We will highlight some important bits of the this configuration file used to build a pod in a K8s ecosystem.
+- The `kind: Pod` tells kubectl what kind of K8s object we are creating in our Kubernetes ecosystem when we do `kubectl apply -f <file-name>`.
+- The `lables -> component: web` is just a label we created so we can be able to reference this Pod in our K8s ecosystem. This could be anything like `lables -> myKey: myValue`
+- The `spec` has an array of containers we want to run in this Pod.
+- As suspected the `containers` property is the array for specifying images that we want to use in this pod.
+- The `image` is for specifying the image we want to run in the container, if no full url of where the image is stored is given docker hub is a default source.
+- `ports -> containerPort` is the port that the running container will be exposing, this should correspond to the port exposed by the built image. 
+
+#### NodePort
+The NodePort is just one of many ways to configure network into our k8s Node, below is code that describes the node port:
+```yaml
+apiVersion: v1 
+kind: Service
+metadata:
+  name: client-node-port
+spec:
+  type: NodePort
+  ports:
+    - port: 3050 
+      targetPort: 3000
+      nodePort: 31515
+  selector:
+    component: web
+```
+
+- The `Kind: Service` tells our Kubernetes cluster that we want to build a network object within our K8s.
+- `spec -> type: NodePort` tells Kuberentes that the type of network object we want is the NodePort; there can be others like `LoadBalance`, `ingress` etc.
+- The `ports` discribe a number of ports that a pod that will be using this NodePort will be mapped to.
+- The `port: 3050`is to be used by other objects in our K8s cluster to access the pod attached to this NodePort. 
+- The `targetPort: 3000` is the port that is exposed by the running container (in our example [here](#nodeport) we used 3000 because the container will be using this to expose the app)
+- The `nodePort: 31515` the port we will use to access the pod from the out side world this will be the port we use to hit i.e. `https://my-pod-url:31515 -> https://my-pod:3000`. This the url we will be using from outside the pod to access our container.
+- `selector -> component: web` is used to find the object that is going to use this service. In our code it will be the node we created about with:  
+```yaml
+metadata:
+  name: client-pod
+  labels:
+    component: web
+```
+These two files discussed are responsible for creating the K8s cluster with a one pod that has nodeport for networking. Running the following command starts up the K8s (assuming you have minikube and kubectl):
+
+```bash
+# creates and checks status of K8s cluster locally
+minikube start 
+minikube status
+
+# create Pod object and network object
+kubectl apply -f <filename-of-pod-config>.yaml
+kubectl apply -f <filename-of-nodeport-config>.yaml
+
+# Check created pod(s)
+kubectl get pods
+
+# Check created network services
+kubectl get services
+
+# get IP of minikube K8s cluster so you can call your node expose app
+# if this spits https://some-minikube-url then to get hit app I will say: https://some-minikube-url:targetPort.
+# In this case targetPort will be 3000 as seen in the above configs
+minikube ip
+
+```
