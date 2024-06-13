@@ -111,9 +111,3 @@ kubectl get services
 minikube ip
 
 ```
-
-#### Flow of creating objects:
-
-`developer -> kubectl -> master (kube-apiserver) -> create objects within nodes (pods, services)`
-
-The above graph describes how the YAML config is passed down in order to deploy our images into Kubernetes.
