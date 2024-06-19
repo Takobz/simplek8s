@@ -5,11 +5,11 @@ This ReadMe is for notes on what I have learned about Kubernetes, they are not s
 Kubernetes (K8s) is a software system for running multiple containers in set of multiple machines.
 
 ## Components That help work with k8s
-- `minikube` for managing containers in the virtual machines.
-- `kubectl` for managing the virtual machines within the cluster.
+- `minikube` for managing containers in the virtual machines. (creates a Node)
+- `kubectl` for managing the virtual machines within the cluster. (k8s master/control-pane)
 
 ### Commands
-`minikube start` starts a virtual machine (Node) that will be our K8s cluster.
+`minikube start` starts a virtual machine that will be a Node in our cluster.
 `minikube status` checks if there's any cluster started?
 
 `kubectl apply -f <filename>` - apply the configuration specified in the yaml into minikube node. (i.e create pod, services, etc)
@@ -110,4 +110,32 @@ kubectl get services
 # In this case targetPort will be 3000 as seen in the above configs
 minikube ip
 
+```
+
+#### How K8s Updates Objects (Internally)
+Kubernetes uses the `name` and `kind` properties as an identifier for objects that are created within the Kubernetes cluster.
+This means when I update the configuration file with the contents:
+```yaml 
+apiVersion: v1
+kind: Pod # change to this results in new object created.
+metadata:
+  name: client-pod # change to this results in new object created.
+  labels:
+    component: web
+spec:
+  containers:
+    - name: client
+      image: khutsokobela/multi-client
+      ports:
+        - containerPort: 3000
+```
+Kubernetes will take `name: client-pod` and `kind: Pod` then look into the Nodes that are created if an object with the specified name and kind exists. Then if it does it will if the config of the existing Node are the same as the config file, if not the Kubernetes master will find means to update whatever changed.
+
+Each config file created is attached to an object with `name` and `kind`. If the `name` or `kind` change Kubernetes will create a new object regardless if it's the same yaml config file.
+
+To check the details of an object in a cluster use:
+```bash
+# example: kubectl describe Pod client-pod
+# omitting name-of-object will show all object of object-type example: kubectl describe Pod
+kubectl describe <object-type> <name-of-object>
 ```
