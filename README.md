@@ -129,7 +129,7 @@ spec:
       ports:
         - containerPort: 3000
 ```
-Kubernetes will take `name: client-pod` and `kind: Pod` then look into the Nodes that are created if an object with the specified name and kind exists. Then if it does it will if the config of the existing Node are the same as the config file, if not the Kubernetes master will find means to update whatever changed.
+Kubernetes will take `name: client-pod` and `kind: Pod` then look into the Nodes that are created if an object with the specified name and kind exists (i.e name: client-pod and Kind: Pod). If it finds such an object that is already created kubernetes will compare the config file given on `apply` with the config of the existing object, if not they are not the same Kubernetes master will find means to update whatever changed.
 
 Each config file created is attached to an object with `name` and `kind`. If the `name` or `kind` change Kubernetes will create a new object regardless if it's the same yaml config file.
 
@@ -139,3 +139,37 @@ To check the details of an object in a cluster use:
 # omitting name-of-object will show all object of object-type example: kubectl describe Pod
 kubectl describe <object-type> <name-of-object>
 ```
+
+The pod config file doesn't allow for all properties to be changed, if we attempt to change the client-pod's containerPort we will see the following error:  
+```bash
+The Pod "client-pod" is invalid: spec: Forbidden: pod updates may not change fields other than `spec.containers[*].image`,`spec.initContainers[*].image`,`spec.activeDeadlineSeconds`,`spec.tolerations` (only additions to existing tolerations),`spec.terminationGracePeriodSeconds` (allow it to be set to 1 if it was previously negative)
+  core.PodSpec{
+        Volumes:        {{Name: "kube-api-access-xg74c", VolumeSource: {Projected: &{Sources: {{ServiceAccountToken: &{ExpirationSeconds: 3607, Path: "token"}}, {ConfigMap: &{LocalObjectReference: {Name: "kube-root-ca.crt"}, Items: {{Key: "ca.crt", Path: "ca.crt"}}}}, {DownwardAPI: &{Items: {{Path: "namespace", FieldRef: &{APIVersion: "v1", FieldPath: "metadata.namespace"}}}}}}, DefaultMode: &420}}}},
+        InitContainers: nil,
+        Containers: []core.Container{
+                {
+                        ... // 3 identical fields
+                        Args:       nil,
+                        WorkingDir: "",
+                        Ports: []core.ContainerPort{
+                                {
+                                        Name:          "",
+                                        HostPort:      0,
+-                                       ContainerPort: 3000,
++                                       ContainerPort: 3001,
+                                        Protocol:      "TCP",
+                                        HostIP:        "",
+                                },
+                        },
+                        EnvFrom: nil,
+                        Env:     nil,
+                        ... // 16 identical fields
+                },
+        },
+        EphemeralContainers: nil,
+        RestartPolicy:       "Always",
+        ... // 28 identical fields
+  }
+```
+
+This means some details like the name of container, ports can't be changed.
