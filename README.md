@@ -172,4 +172,7 @@ The Pod "client-pod" is invalid: spec: Forbidden: pod updates may not change fie
   }
 ```
 
-This means some details like the name of container, ports can't be changed.
+This means some details like the name of container, ports can't be changed. This is a consequence of using the Pod object directly, to avoid this let's look at the Deployments objects.
+
+## Other Pages
+- [Deployments](../simplek8s/other-pages/Deployments.md)
