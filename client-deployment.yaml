@@ -2,18 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: client-deployment
-spec:
-  replicas: 1
-  selector:
+spec: # specs of the deployment itself.
+  replicas: 1 # creates 1 pod using the template below.
+  selector: # how the deployment finds what pods to manage.
     matchLabels:
       component: web
-  template:
+  template: # template list configuration for every pod that will be within this deployment.
     metadata:
-      labels:
-        component: web
-    spec:
+      labels: # every pod within this deployment will have this label.
+        component: web 
+    spec: # every pod within this deployment will be running containers in this spec.
       containers:
         - name: client
           image: khutsokobela/multi-client
           ports:
-            - containerPort: 3001
+            - containerPort: 3000

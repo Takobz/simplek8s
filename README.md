@@ -16,6 +16,7 @@ Kubernetes (K8s) is a software system for running multiple containers in set of 
 - `kubectl get pods` - gets all objects of type Pod running.
 - `kubectl get services` - gets all objects of type Service running.
 - `minikube ip` - get the IP addresses of the minicube Node
+- `kubectl delete -f <filename>` - used to delete/remove objects created by filename
 
 ## Kubernetes With NodePort.
 Below is a typical Kubernetes cluster with that uses NodePort service as a means to expose the Pod and ultimately the container(s) in the pod to the outside world.
